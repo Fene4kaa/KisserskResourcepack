@@ -105,6 +105,24 @@ class CollarFitTest(unittest.TestCase):
                 self.assertGreaterEqual(bottom, -1e-6)
                 self.assertLessEqual(bottom, 0.125, "Side section floats above the shoulder")
 
+    def test_front_and_back_sit_just_below_head(self):
+        straps = [vertices for _, vertices in self.leather
+                  if min(p[0] for p in vertices) < 0 < max(p[0] for p in vertices)]
+        self.assertTrue(straps, "Missing front/back strap across the neck")
+        for vertices in straps:
+            top = max(p[1] for p in vertices)
+            self.assertLessEqual(top, 1e-6, "Strap rises into the head")
+            self.assertGreaterEqual(top, -0.125, "Visible gap under the head")
+
+    def test_sides_fit_close_to_head(self):
+        sides = [vertices for _, vertices in self.leather
+                 if min(p[2] for p in vertices) < 0 < max(p[2] for p in vertices)]
+        self.assertTrue(sides, "Missing side straps alongside the head")
+        for vertices in sides:
+            clearance = min(abs(p[0]) for p in vertices) - 4
+            self.assertGreaterEqual(clearance, -1e-6)
+            self.assertLessEqual(clearance, 0.5, "Oversized collar opening beside the head")
+
 
 if __name__ == "__main__":
     unittest.main()
