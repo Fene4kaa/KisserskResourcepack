@@ -70,7 +70,7 @@ resource-pack-prompt={"text":"Установите KisserskPack для корр�
 | Тег / коммит | `KisserskPack.zip` SHA-1 | Что изменилось |
 |---|---|---|
 | `pre-evasion-pack` (`fafb4d6`) | `517453c16593d2777a8054339fdf94a29d47080d` | Версия до скрытия тоста |
-| `main` после коммита «Hide the failed-download toast» | `2571cda5d8f0da5a2d258ed251b2480557115273` | + 144 записи для скрытия тоста |
+| `1f7e93b` «Hide the failed-download toast» | `2571cda5d8f0da5a2d258ed251b2480557115273` | + 144 записи для скрытия тоста |
 
 Откат: `git checkout pre-evasion-pack -- KisserskPack.zip`, затем вернуть `resource-pack-sha1=517453c16593d2777a8054339fdf94a29d47080d`.
 
@@ -88,3 +88,20 @@ Get-FileHash .\KisserskPack.zip -Algorithm SHA1
 2. Пересчитайте SHA-1.
 3. Обновите `resource-pack-sha1` в `server.properties`.
 4. Перезапустите сервер (или выполните `reload`, если плагин/ядро поддерживает перечитывание настроек).
+
+## Служебные паки для MeowAntiXray (`evasion-packs/`)
+
+Папка `evasion-packs/` содержит файлы, которые плагин [MeowAntiXray](https://github.com/Fene4kaa/MeowAntiXray) выдаёт клиентам при определении повторного входа (защита от обхода бана): `1.zip` ... `62.zip` (проб-паки, по ~190 байт) и `hide.zip` (то же скрытие тоста отдельным паком, 48 КБ). **Игрокам их скачивать вручную не нужно.**
+
+Файлы построены плагином (`PackFactory`, `track: 62`, `pack-format.min: 88`, `pack-format.max: 1000`) побайтно воспроизводимо, а клиент сверяет их SHA-1. Поэтому **не меняйте и не перепаковывайте их вручную**: плагин при старте и после `/axray reload` скачивает `1.zip` и сверяет хеш. Если вы поменяли `evasion.track` или `evasion.pack-format.*` в конфиге плагина, пересоздайте файлы (плагин экспортирует их в `plugins/MeowAntiXray/evasion/packs/`) и замените папку.
+
+Конфиг плагина для этого репозитория:
+
+```yaml
+evasion:
+  enabled: true
+  public-url: "https://raw.githubusercontent.com/Fene4kaa/KisserskResourcepack/main/evasion-packs"
+  hide-toast-pack: false   # скрытие тоста уже внутри KisserskPack.zip
+```
+
+Подробности: `docs/EVASION_GUIDE.md` и `docs/EVASION_INTERNALS.md` в репозитории плагина.
