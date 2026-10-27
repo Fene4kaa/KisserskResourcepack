@@ -2,7 +2,7 @@
 
 Ресурспак для Minecraft Java Edition (Kissersk + MeowGuild Altar).
 
-- **Версия игры:** 1.21.9 – 1.21.10 (pack format 88.0, `min_format`/`max_format`)
+- **Целевая версия:** Minecraft Java 26.2, формат 88.0 (`min_format`/`max_format`); совпадение проверено по `version.json` используемого сервера. Графический клиент отдельно не запускался.
 - **Формат:** `.zip`, структура с `pack.mcmeta` в корне
 - **Авторы:** Feni4ka, ItsKitsuRai
 
@@ -14,6 +14,22 @@
 | `meowdoggie` | Ошейники (collar): модели, item-определения и текстуры (black, blue, green, purple, red, gold, silver, leather) |
 | `meowguild` | Алтарь: модели `altar_core` и `runic_pedestal`, текстуры, шрифт `altar_schemes`, локализация `ru_ru`/`en_us` |
 | `minecraft` | Кастомный шрифт `safei.ttf`, иконка таба `tab-base.png`, дополнение `default` шрифта; **скрытие тоста «не удалось скачать пак»**: пустые `download.pack.failed` и `download.pack.title` в 143 языках и прозрачный `textures/gui/sprites/toast/system.png` (см. ниже) |
+| `kissersk` | Четыре баджа профессий: кирка, красное яблоко, наковальня, палочка со звездой; отдельный шрифт `kissersk:badges` |
+
+### Баджи профессий (MeowChat 2.4.0 / MeowGuild 6.2.0)
+
+Четыре прозрачных PNG 16×16 находятся в `assets/kissersk/textures/font/badges/`: ванильная железная кирка для шахтёра и три прежних кастомных значка.
+Шрифт `assets/kissersk/font/badges.json`: U+E100 — miner, U+E101 — farmer, U+E102 — blacksmith, U+E103 — mage; height=8/ascent=7.
+MeowChat задаёт font key явно только компоненту баджа; `minecraft:default`, U+2155 и алтарные глифы не заменяются.
+Профессию передаёт MeowGuild через MeowAPI 1.1.0. Без выбранной профессии префикса нет.
+Для шахтёра используется оригинальный `assets/minecraft/textures/item/iron_pickaxe.png`, извлечённый без изменения пикселей из установленного клиента Minecraft 1.21.11. SHA-1 исходного PNG: `385134078cafbacd0efd98ae192097d3448e9163`. Яблоко фермера, маг и кузнец оставлены побайтно прежними. В предпросмотре заменена только колонка шахтёра. Глифы, привязка к профессиям и JAR не менялись.
+
+Обновить основной архив из исходников: `python -B scripts/update_badges.py`.
+Скрипт сохраняет прежние ZIP-записи и заменяет только пять добавленных записей; повторный запуск с теми же источниками даёт те же байты.
+Проверено: 7 тестов, 190 исходных записей и 63 служебных ZIP AntiXray неизменны; сетевые компоненты TAB на Paper 26.2. Графическая отрисовка Minecraft не проверялась.
+
+SHA-1 текущего `KisserskPack.zip` с баджами: `ae296ed2a4c4261720826a0e2bd7891ac2196820`.
+URL и хеш в серверном примере ниже относятся к этому же архиву. При обновлении дождитесь доступности нового файла на хостинге, прежде чем менять хеш на сервере.
 
 ### Обновлённая форма ошейника
 
@@ -52,10 +68,10 @@ python -B -m unittest discover -s tests -v
 
 ```properties
 resource-pack=https://raw.githubusercontent.com/Fene4kaa/KisserskResourcepack/main/KisserskPack.zip
-resource-pack-sha1=2571cda5d8f0da5a2d258ed251b2480557115273
+resource-pack-sha1=ae296ed2a4c4261720826a0e2bd7891ac2196820
 ```
 
-Архив в ветке `main` содержит текущую версию; указанный SHA-1 соответствует опубликованному `KisserskPack.zip`. После замены архива пересчитайте хеш и обновите `server.properties`, иначе клиенты отклонят скачанный пак.
+Пример раздаёт текущий пак с баджами через ветку `main`. Для фиксации версии можно заменить `main` в URL точным SHA коммита публикации; хеш самого ZIP от этого не меняется.
 
 Опционально можно задать сообщение при скачивании:
 
@@ -71,6 +87,10 @@ resource-pack-prompt={"text":"Установите KisserskPack для корр�
 |---|---|---|
 | `pre-evasion-pack` (`fafb4d6`) | `517453c16593d2777a8054339fdf94a29d47080d` | Версия до скрытия тоста |
 | `1f7e93b` «Hide the failed-download toast» | `2571cda5d8f0da5a2d258ed251b2480557115273` | + 144 записи для скрытия тоста |
+| Первый локальный вариант баджей | `f651fac709c689ea20d214de9f19b60944c74c57` | Первоначальные 4 PNG и bitmap-шрифт |
+| Локальный релиз: новая кирка и яблоко | `dac8710431b2c3f34ee7ee63cba0110fad407d4f` | Перерисованы только miner.png и farmer.png; остальные ресурсы неизменны |
+| Локальный релиз: реалистичная кирка, исходные маг/кузнец | `9c79e6e95f4fee7593dbffae4e1b648a4e82f73f` | Новая miner.png, сохранено яблоко; mage.png и blacksmith.png из первоначальной версии |
+| Ванильная железная кирка | `ae296ed2a4c4261720826a0e2bd7891ac2196820` | Только miner.png заменён оригинальной текстурой Minecraft |
 
 Откат: `git checkout pre-evasion-pack -- KisserskPack.zip`, затем вернуть `resource-pack-sha1=517453c16593d2777a8054339fdf94a29d47080d`.
 

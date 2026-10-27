@@ -1,0 +1,8 @@
+{
+  "providers": [
+    {"type": "bitmap", "file": "kissersk:font/badges/miner.png", "ascent": 7, "height": 8, "chars": ["\ue100"]},
+    {"type": "bitmap", "file": "kissersk:font/badges/farmer.png", "ascent": 7, "height": 8, "chars": ["\ue101"]},
+    {"type": "bitmap", "file": "kissersk:font/badges/blacksmith.png", "ascent": 7, "height": 8, "chars": ["\ue102"]},
+    {"type": "bitmap", "file": "kissersk:font/badges/mage.png", "ascent": 7, "height": 8, "chars": ["\ue103"]}
+  ]
+}
