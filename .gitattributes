@@ -1,5 +1,5 @@
-# Badge source bytes are read directly into the reproducible resource ZIP.
-/assets/kissersk/font/badges.json text eol=lf
+# Asset source bytes are read directly into the reproducible resource ZIP.
+/assets/**/*.json text eol=lf
 /scripts/*.py text eol=lf
 /tests/*.py text eol=lf
 *.png binary

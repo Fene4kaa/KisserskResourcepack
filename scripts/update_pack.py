@@ -1,9 +1,9 @@
-"""Update only the five badge entries without recompressing any existing assets.
+"""Update badge and stocking sources without recompressing unrelated assets.
 
-Run with Python 3: python -B scripts/update_badges.py
-The source font and PNG files under assets/ are authoritative. Repeated runs
-with identical sources produce identical ZIP bytes. This handles the repository's
-single-disk, non-ZIP64 archive; managed badge entries remain an appended suffix.
+Run with Python 3: python -B scripts/update_pack.py
+The source files under assets/ are authoritative. Repeated runs with identical
+sources produce identical ZIP bytes. This handles the repository's single-disk,
+non-ZIP64 archive; managed assets remain an appended suffix.
 """
 import argparse
 import hashlib
@@ -21,6 +21,15 @@ MANAGED_PATHS = (
     "assets/kissersk/textures/font/badges/blacksmith.png",
     "assets/kissersk/textures/font/badges/mage.png",
 )
+MANAGED_PATHS += ("assets/minecraft/atlases/armor_trims.json",) + tuple(
+    path.relative_to(ROOT).as_posix()
+    for path in sorted((ROOT / "assets/meowtights").rglob("*"))
+    if path.is_file()
+)
+
+
+def is_managed(name):
+    return name in MANAGED_PATHS or name.startswith("assets/meowtights/")
 
 
 def directory_records(raw, archive):
@@ -54,11 +63,11 @@ def update_archive(archive_path, source_root):
                 or offset != original.start_dir or size != end - original.start_dir
                 or len(trailer) != 22 + comment_size):
             raise ValueError("Unsupported multi-disk, ZIP64 or prefixed archive")
-        managed = [(info, record) for info, record in records if info.filename in MANAGED_PATHS]
-        kept = [(info, record) for info, record in records if info.filename not in MANAGED_PATHS]
+        managed = [(info, record) for info, record in records if is_managed(info.filename)]
+        kept = [(info, record) for info, record in records if not is_managed(info.filename)]
         suffix_start = min((info.header_offset for info, _ in managed), default=original.start_dir)
         if any(info.header_offset >= suffix_start for info, _ in kept):
-            raise ValueError("Badge entries must follow all original archive entries")
+            raise ValueError("Managed entries must follow all original archive entries")
         prefix = raw[:suffix_start]
 
     generated = io.BytesIO()

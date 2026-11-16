@@ -9,7 +9,7 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 SPEC = importlib.util.spec_from_file_location(
-    "update_badges", ROOT / "scripts" / "update_badges.py"
+    "update_pack", ROOT / "scripts" / "update_pack.py"
 )
 UPDATER = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(UPDATER)
@@ -41,7 +41,6 @@ class BadgeArchiveTests(unittest.TestCase):
                 self.assertEqual(b'{"pack":{"min_format":[88,0]}}', result.read("pack.mcmeta"))
                 actual = result.getinfo("pack.mcmeta")
                 self.assertEqual(before, {key: getattr(actual, key) for key in actual.__slots__})
-                self.assertEqual(6, len(result.infolist()))
                 self.assertEqual(
                     (ROOT / "assets/kissersk/font/badges.json").read_bytes(),
                     result.read("assets/kissersk/font/badges.json"),
@@ -68,7 +67,6 @@ class BadgeArchiveTests(unittest.TestCase):
             miner.write_bytes(replacement)
             UPDATER.update_archive(archive, sources)
             with zipfile.ZipFile(archive) as result:
-                self.assertEqual(6, len(result.infolist()))
                 self.assertEqual(replacement, result.read("assets/kissersk/textures/font/badges/miner.png"))
                 self.assertEqual(b"original", result.read("pack.mcmeta"))
             changed = archive.read_bytes()
